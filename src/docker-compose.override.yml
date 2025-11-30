@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  eshopdb:
+    container_name: eshopdb
+    environment:
+      POSTGRES_PASSWORD: postgress
+      POSTGRES_USER: postgress
+      POSTGRES_DB: EShopDb
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_eshopdb:/var/lib/postgresql/data
+ 
