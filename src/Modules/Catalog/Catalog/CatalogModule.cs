@@ -11,6 +11,17 @@ public static class CatalogModule
     {
         // Add services to the container.
 
+        //API Endpoint services
+
+        // Application Use Case services
+
+        // Data - Infrastructure services
+        var connectionString = configuration.GetConnectionString("Database");
+
+        services.AddDbContext<CatalogDbContext>(options =>
+        {
+            options.UseNpgsql(connectionString);
+        });
 
         return services;
     }
