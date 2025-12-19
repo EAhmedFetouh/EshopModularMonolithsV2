@@ -1,15 +1,25 @@
-version: '3.8'
-
 services:
   eshopdb:
+    image: postgres:16
     container_name: eshopdb
     environment:
-      POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: EShopDb
-    restart: always
     ports:
       - "5432:5432"
     volumes:
-      - postgres_eshopdb:/var/lib/postgresql
- 
+      - postgres_eshopdb:/var/lib/postgresql/data
+
+  seq:
+    container_name: seq
+    restart: always
+    environment:
+       - ACCEPT_EULA=Y
+       - SEQ_FIRSTRUN_ADMINPASSWORD=P@ssw0rd
+    ports:
+      - "5341:5341"
+      - "9091:80"
+
+volumes:
+  postgres_eshopdb:
