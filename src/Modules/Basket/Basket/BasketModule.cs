@@ -1,8 +1,11 @@
-﻿using FluentValidation;
+﻿using Basket.Data.Repository;
+using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Behaviors;
 using Shared.Data;
 using Shared.Data.Interceptors;
 
@@ -18,11 +21,22 @@ public static class BasketModule
         //1. Api Endpoint services
 
         //2. Application Use Case services
+         services.AddScoped<IBasketRepository, BasketRepository>();
+         services.Decorate<IBasketRepository, CachedBasketRepository>();
+
+        // this is manual decoration alternative
+
+        //services.AddScoped<IBasketRepository>(provider =>
+        //{
+        //   var basketRepository = provider.GetRequiredService<BasketRepository>();
+        //    return new CachedBasketRepository(
+        //        basketRepository,
+        //        provider.GetRequiredService<IDistributedCache>());
+        //});
 
 
         //3. Data - Infrastructure services
 
-        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
         var connectionString = configuration.GetConnectionString("Database");
 
