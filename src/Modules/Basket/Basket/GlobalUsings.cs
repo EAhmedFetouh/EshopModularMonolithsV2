@@ -15,4 +15,5 @@ global using Mapster;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Mvc;
 global using Basket.Data.Repository;
+global using Shared.Messaing.Extensions;
 

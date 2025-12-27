@@ -1,5 +1,8 @@
 
 
+
+using Shared.Messaing.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((context, config) =>
@@ -32,6 +35,9 @@ builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
 });
+
+
+builder.Services.AddMassTransitWithAssemblies(builder.Configuration,catalogAssembly, basketAssembly);
 
 //modeule services: catalog, basket, ordering
 

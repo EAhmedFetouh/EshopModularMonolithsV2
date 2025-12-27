@@ -37,7 +37,7 @@ public class CachedBasketRepository(IBasketRepository repository, IDistributedCa
 
     public async Task<ShoppingCart> GetBasket(string userName, bool AsNoTracking = true, CancellationToken cancellationToken = default)
     {
-        if (!AsNoTracking)
+         if (!AsNoTracking)
         {
             return await repository.GetBasket(userName, AsNoTracking, cancellationToken);
         }

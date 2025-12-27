@@ -20,3 +20,4 @@ global using Catalog.Products.Features.CreateProduct;
 global using Catalog.Products.Features.UpdateProduct;
 global using FluentValidation;
 global using Shared.Exceptions;
+global using Catalog.Products.Events;
