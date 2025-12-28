@@ -37,6 +37,24 @@ services:
     ports:
      - "5672:5672"
      - "15672:15672"
+ 
+
+  identity:
+    container_name: identity
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=P@ssw0rd
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://eshopdb:5432/EshopDb?currentSchema=identity
+      - KC_DB_USERNAME=postgres
+      - KC_DB_PASSWORD=postgres
+    ports:
+      - "9090:8080"
+    restart: always
+    command:
+      - start-dev
+    depends_on:
+      - eshopdb
 
 volumes:
   postgres_eshopdb:
