@@ -2,6 +2,7 @@
 
 
 using Keycloak.AuthServices.Authentication;
+using Ordering;
 using Shared.Messaing.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -7,7 +7,7 @@ namespace Ordering.Orders.Models;
 public class Order : Aggregate<Guid>
 {
     private readonly List<OrderItem> _items = new();
-    private IReadOnlyList<OrderItem> Items => _items.AsReadOnly();
+    public IReadOnlyList<OrderItem> Items => _items.AsReadOnly();
 
     public Guid CustomerId { get; private set; }
     public string OrderName { get; private set; } = default!;
