@@ -1,6 +1,7 @@
 ﻿using Ordering.Orders.Event;
 using Ordering.Orders.ValueObjects;
 using Shared.DDD;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Ordering.Orders.Models;
 
@@ -15,20 +16,22 @@ public class Order : Aggregate<Guid>
     public Address ShippingAdress { get; private set; } = default!;
     public Address BillingAddress { get; private set; } = default!;
     public Payment Payment { get; private set; } = default!;
-    public decimal TotalPrice => _items.Sum(i => i.Price * i.Quantity);
 
-    public static Order Create(Guid id, Guid customerId,string orderName, Address shippingAddress,Address billingAddress, Payment payment)
+    [NotMapped]
+    public decimal TotalPrice { get; private set; }
+
+    public static Order Create(Guid id, Guid customerId, string orderName, Address shippingAddress, Address billingAddress, Payment payment)
     {
         var order = new Order
         {
-            Id=id,
+            Id = id,
             CustomerId = customerId,
             OrderName = orderName,
             ShippingAdress = shippingAddress,
             BillingAddress = billingAddress,
             Payment = payment
         };
-        
+
         order.AddDomainEvent(new OrderCreatedEvent(order));
 
         return order;
@@ -47,7 +50,7 @@ public class Order : Aggregate<Guid>
         }
         else
         {
-            var newItem = new OrderItem(Id,productId, price, quantity);
+            var newItem = new OrderItem(Id, productId, price, quantity);
             _items.Add(newItem);
         }
     }
