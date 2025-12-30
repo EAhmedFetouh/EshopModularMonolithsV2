@@ -16,9 +16,10 @@ builder.Host.UseSerilog((context, config) =>
 
 var catalogAssembly = typeof(CatalogModule).Assembly;
 var basketAssembly = typeof(BasketModule).Assembly;
+var orderingAssembly = typeof(OrderingModule).Assembly;
 
 builder.Services
-    .AddCarterWithAssemblies(catalogAssembly,basketAssembly);
+    .AddCarterWithAssemblies(catalogAssembly,basketAssembly, orderingAssembly);
 
 #region  was commented out
 //builder.Services.AddMediatR(cfg =>
@@ -31,7 +32,7 @@ builder.Services
 #endregion
 
 MediatRExtentions
-    .AddMediatRWithAssemblies(builder.Services, catalogAssembly, basketAssembly);
+    .AddMediatRWithAssemblies(builder.Services, catalogAssembly, basketAssembly, orderingAssembly);
 
 builder.Services.AddStackExchangeRedisCache(options =>
 {
@@ -39,7 +40,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 
 
-builder.Services.AddMassTransitWithAssemblies(builder.Configuration,catalogAssembly, basketAssembly);
+builder.Services.AddMassTransitWithAssemblies(builder.Configuration,catalogAssembly, basketAssembly,orderingAssembly);
 
 
 builder.Services.AddKeycloakWebApiAuthentication(builder.Configuration);
