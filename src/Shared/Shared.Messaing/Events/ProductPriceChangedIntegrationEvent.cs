@@ -1,7 +1,7 @@
 ﻿
 namespace Shared.Messaing.Events;
 
-public class ProductPriceChangedIntegrationEvent : IntegrationEvent
+public record ProductPriceChangedIntegrationEvent : IntegrationEvent
 {
     public Guid ProductId { get; set; }
     public string Name { get; set; } = default!;

@@ -1,7 +1,7 @@
 ﻿
 namespace Shared.Messaing.Events;
 
-public class IntegrationEvent
+public record IntegrationEvent
 {
     public Guid EventId => Guid.NewGuid();
     public DateTime OccurredOn => DateTime.Now;
