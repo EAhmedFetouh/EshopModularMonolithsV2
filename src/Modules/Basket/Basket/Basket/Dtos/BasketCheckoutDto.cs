@@ -7,7 +7,7 @@ public record BasketCheckoutDto
     decimal TotalPrice,
     // Shipping and billing Address
     string FirstName,
-    string lastName,
+    string LastName,
     string EmailAddress,
     string AddressLine,
     string Country,

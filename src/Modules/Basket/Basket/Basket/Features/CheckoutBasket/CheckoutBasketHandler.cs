@@ -1,8 +1,7 @@
-﻿
-
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Text.Json;
 using MassTransit;
+using Microsoft.Extensions.Logging;
 using Shared.Messaing.Events;
 
 namespace Basket.Basket.Features.CheckoutBasket;
@@ -20,7 +19,7 @@ public class CheckoutBasketCommandValidator : AbstractValidator<CheckoutBasketCo
     }
 }
 
-internal class CheckoutBasketHandler (IBasketRepository repository, IBus bus, BasketDbContext dbcontext) : ICommandHandler<CheckoutBasketCommand, CheckoutBasketResult>
+internal class CheckoutBasketHandler (IBasketRepository repository, IBus bus, BasketDbContext dbcontext, ILogger<CheckoutBasketHandler> logger) : ICommandHandler<CheckoutBasketCommand, CheckoutBasketResult>
 {
     public async Task<CheckoutBasketResult> Handle(CheckoutBasketCommand command, CancellationToken cancellationToken)
     {
@@ -61,10 +60,11 @@ internal class CheckoutBasketHandler (IBasketRepository repository, IBus bus, Ba
             return new CheckoutBasketResult(true);
 
         }
-        catch 
+        catch (Exception ex)
         {
             await transaction.RollbackAsync(cancellationToken);
-            return new CheckoutBasketResult(true);
+            logger.LogError(ex, "Error during checkout for user {UserName}", command.BasketCheckout.UserName);
+            return new CheckoutBasketResult(false);
         }
 
 

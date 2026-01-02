@@ -17,7 +17,6 @@ public class Order : Aggregate<Guid>
     public Address BillingAddress { get; private set; } = default!;
     public Payment Payment { get; private set; } = default!;
 
-    [NotMapped]
     public decimal TotalPrice { get; private set; }
 
     public static Order Create(Guid id, Guid customerId, string orderName, Address shippingAddress, Address billingAddress, Payment payment)
@@ -29,7 +28,8 @@ public class Order : Aggregate<Guid>
             OrderName = orderName,
             ShippingAdress = shippingAddress,
             BillingAddress = billingAddress,
-            Payment = payment
+            Payment = payment,
+            TotalPrice = 0
         };
 
         order.AddDomainEvent(new OrderCreatedEvent(order));
@@ -53,6 +53,9 @@ public class Order : Aggregate<Guid>
             var newItem = new OrderItem(Id, productId, price, quantity);
             _items.Add(newItem);
         }
+
+        // Recalculate total price
+        TotalPrice = _items.Sum(item => item.Price * item.Quantity);
     }
 
 
@@ -62,8 +65,8 @@ public class Order : Aggregate<Guid>
         if (orderItem != null)
         {
             _items.Remove(orderItem);
+            // Recalculate total price
+            TotalPrice = _items.Sum(item => item.Price * item.Quantity);
         }
     }
-
-
 }

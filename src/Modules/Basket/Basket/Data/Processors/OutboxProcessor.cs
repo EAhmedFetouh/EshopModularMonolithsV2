@@ -12,6 +12,11 @@ public class OutboxProcessor
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        var jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
         while (!stoppingToken.IsCancellationRequested)
         {
             try
@@ -32,10 +37,20 @@ public class OutboxProcessor
                         continue;
                     }
 
-                    var eventMessage = JsonSerializer.Deserialize(message.Content, eventType);
+                    object? eventMessage;
+                    try
+                    {
+                        eventMessage = JsonSerializer.Deserialize(message.Content, eventType, jsonOptions);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(ex, "Could not deserialize message content for type: {type}. Content: {content}", message.Type, message.Content);
+                        continue;
+                    }
+
                     if (eventMessage == null)
                     {
-                        logger.LogWarning("Could not deserialize message content for type: {type}", message.Type);
+                        logger.LogWarning("Deserialized message was null for type: {type}. Content: {content}", message.Type, message.Content);
                         continue;
                     }
 

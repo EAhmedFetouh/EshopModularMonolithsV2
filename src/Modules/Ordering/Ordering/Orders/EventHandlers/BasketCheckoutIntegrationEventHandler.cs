@@ -1,5 +1,4 @@
-﻿
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.Extensions.Logging;
 using Ordering.Orders.Features.CreateOrder;
 using Shared.Messaing.Events;
@@ -14,7 +13,13 @@ public class BasketCheckoutIntegrationEventHandler
     {
         logger.LogInformation("Integration Event handled : {IntegrationEvent}", context.Message.GetType().Name);
 
+        // Log the incoming message properties for debugging
+        logger.LogDebug("Incoming BasketCheckoutIntegrationEvent: {@Message}", context.Message);
+
         var createOrderCommand = MapToCreateOrderCommand(context.Message);
+
+        // Log the mapped order DTO to ensure required fields are present
+        logger.LogDebug("Mapped CreateOrderCommand.Order: {@Order}", createOrderCommand.Order);
 
         await sender.Send(createOrderCommand);
 
@@ -28,10 +33,10 @@ public class BasketCheckoutIntegrationEventHandler
             message.FirstName,
             message.LastName,
             message.EmailAddress,
-            message.AddressLine,
             message.Country,
             message.State,
-            message.ZipCode
+            message.ZipCode,
+            message.AddressLine
         );
 
         var paymentDto = new PaymentDto(
