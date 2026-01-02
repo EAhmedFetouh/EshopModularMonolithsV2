@@ -45,7 +45,17 @@ builder.Services.AddMassTransitWithAssemblies(builder.Configuration,catalogAssem
 
 builder.Services.AddHostedService<OutboxProcessor>();
 
-builder.Services.AddKeycloakWebApiAuthentication(builder.Configuration);
+builder.Services.AddKeycloakWebApiAuthentication(builder.Configuration, options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters.ValidIssuers = new[]
+    {
+        "http://identity:8080/realms/myrealm",
+        "http://localhost:9090/realms/myrealm"
+    };
+    options.TokenValidationParameters.ValidateIssuer = true;
+    options.TokenValidationParameters.ValidateAudience = false;
+});
 builder.Services.AddAuthorization();
 
 //module services: catalog, basket, ordering

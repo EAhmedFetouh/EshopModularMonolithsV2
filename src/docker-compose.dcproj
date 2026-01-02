@@ -12,5 +12,6 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="TROUBLESHOOTING_AND_DOCKER_SETUP.md" />
   </ItemGroup>
 </Project>

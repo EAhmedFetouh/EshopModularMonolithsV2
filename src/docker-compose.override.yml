@@ -10,6 +10,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_eshopdb:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
 
   seq:
     container_name: seq
@@ -40,21 +41,75 @@ services:
  
 
   identity:
+    image: quay.io/keycloak/keycloak:24.0.3
     container_name: identity
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=P@ssw0rd
       - KC_DB=postgres
-      - KC_DB_URL=jdbc:postgresql://eshopdb:5432/EshopDb?currentSchema=identity
+      - KC_DB_URL=jdbc:postgresql://eshopdb:5432/EShopDb
       - KC_DB_USERNAME=postgres
       - KC_DB_PASSWORD=postgres
+      # Use same database but separate schema
+      - KC_DB_SCHEMA=keycloak
     ports:
       - "9090:8080"
-    restart: always
-    command:
-      - start-dev
+    command: ["start-dev"]
     depends_on:
       - eshopdb
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+
+  api:
+    container_name: api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      # Database connection using service name instead of localhost
+      - ConnectionStrings__Database=Server=eshopdb;Port=5432;Database=EShopDb;User Id=postgres;Password=postgres
+      # Redis connection using service name
+      - ConnectionStrings__Redis=distributedcache:6379
+      # RabbitMQ message broker using service name
+      - MessageBroker__Host=amqp://messagebus:5672
+      - MessageBroker__UserName=guest
+      - MessageBroker__Password=guest
+      # Keycloak - accept tokens from both internal and external URLs
+      - Keycloak__auth-server-url=http://identity:8080/
+      - Keycloak__realm=myrealm
+      - Keycloak__resource=myclient
+      - Keycloak__credentials__secret=R6A8ZuiOIVfB47XABIAakNttJ0aaG11D
+      - Keycloak__ValidIssuers__0=http://identity:8080/realms/myrealm
+      - Keycloak__ValidIssuers__1=http://localhost:9090/realms/myrealm
+      # Serilog Seq using service name
+      - Serilog__Using__0=Serilog.Sinks.Console
+      - Serilog__Using__1=Serilog.Sinks.Seq
+      - Serilog__MinimumLevel__Default=Information
+      - Serilog__MinimumLevel__Override__Microsoft=Information
+      - Serilog__MinimumLevel__Override__System=Warning
+      - Serilog__WriteTo__0__Name=Console
+      - Serilog__WriteTo__1__Name=Seq
+      - Serilog__WriteTo__1__Args__serverUrl=http://seq:5341
+      - Serilog__Enrich__0=FromLogContext
+      - Serilog__Enrich__1=WithMachineName
+      - Serilog__Enrich__2=WithProcessId
+      - Serilog__Enrich__3=WithThreadId
+      - Serilog__Properties__Application=EShop ASP.NET Core App
+      - Serilog__Properties__Environment=Development
+    ports:
+      - "6000:8080"
+      - "6060:8081"
+    depends_on:
+      - eshopdb
+      - distributedcache
+      - messagebus
+      - identity
+      - seq
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
 
 volumes:
   postgres_eshopdb:
+  keycloak_data:
+
