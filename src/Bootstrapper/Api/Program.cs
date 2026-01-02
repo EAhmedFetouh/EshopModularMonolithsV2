@@ -1,6 +1,7 @@
 
 
 
+using Basket.Data.Processors;
 using Keycloak.AuthServices.Authentication;
 using Ordering;
 using Shared.Messaing.Extensions;
@@ -42,6 +43,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 
 builder.Services.AddMassTransitWithAssemblies(builder.Configuration,catalogAssembly, basketAssembly,orderingAssembly);
 
+builder.Services.AddHostedService<OutboxProcessor>();
 
 builder.Services.AddKeycloakWebApiAuthentication(builder.Configuration);
 builder.Services.AddAuthorization();
